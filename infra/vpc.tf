@@ -28,7 +28,7 @@ resource "aws_default_route_table" "main" {
   }
 }
 
-resource "aws_subnet" "public-az1" {
+resource "aws_subnet" "public_az1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.0.0/22"
   availability_zone       = "us-east-1a"
@@ -40,7 +40,7 @@ resource "aws_subnet" "public-az1" {
 }
 
 
-resource "aws_subnet" "public-az2" {
+resource "aws_subnet" "public_az2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.4.0/22"
   availability_zone       = "us-east-1b"
@@ -51,7 +51,7 @@ resource "aws_subnet" "public-az2" {
   }
 }
 
-resource "aws_subnet" "public-az3" {
+resource "aws_subnet" "public_az3" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.8.0/22"
   availability_zone       = "us-east-1c"
@@ -63,7 +63,7 @@ resource "aws_subnet" "public-az3" {
 }
 
 
-resource "aws_subnet" "private-az1" {
+resource "aws_subnet" "private_az1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.16.0/22"
   availability_zone       = "us-east-1a"
@@ -74,7 +74,7 @@ resource "aws_subnet" "private-az1" {
   }
 }
 
-resource "aws_subnet" "private-az2" {
+resource "aws_subnet" "private_az2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.20.0/22"
   availability_zone       = "us-east-1b"
@@ -85,7 +85,7 @@ resource "aws_subnet" "private-az2" {
   }
 }
 
-resource "aws_subnet" "private-az3" {
+resource "aws_subnet" "private_az3" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.24.0/22"
   availability_zone       = "us-east-1c"
@@ -96,7 +96,7 @@ resource "aws_subnet" "private-az3" {
   }
 }
 
-resource "aws_subnet" "Data-az1" {
+resource "aws_subnet" "Data_az1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.32.0/22"
   availability_zone       = "us-east-1a"
@@ -107,7 +107,7 @@ resource "aws_subnet" "Data-az1" {
   }
 }
 
-resource "aws_subnet" "Data-az2" {
+resource "aws_subnet" "Data_az2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.36.0/22"
   availability_zone       = "us-east-1b"
@@ -118,7 +118,7 @@ resource "aws_subnet" "Data-az2" {
   }
 }
 
-resource "aws_subnet" "Data-az3" {
+resource "aws_subnet" "Data_az3" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.40.0/22"
   availability_zone       = "us-east-1c"
@@ -128,4 +128,5 @@ resource "aws_subnet" "Data-az3" {
     Name = "data AZ3"
   }
 }
+
 
