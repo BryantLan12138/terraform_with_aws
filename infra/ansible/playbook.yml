@@ -1,0 +1,16 @@
+- name: Deploy Application
+  hosts: all
+  vars:
+  tasks: 
+    - name: Ensure apache is installed
+      become: yes
+      package:
+        name: httpd
+        state: present
+    
+    - name: Ensure apache server is running
+      become: yes
+      service:
+        name:  httpd
+        state:  started
+        enabled:  yes  
