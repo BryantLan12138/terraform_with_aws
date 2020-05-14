@@ -101,6 +101,7 @@ resource "aws_instance" "front-end" {
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.allow_http_ssh.id]
   subnet_id       = aws_subnet.private_az1.id
+  key_name        = aws_key_pair.deployer.key_name
 
 
 
