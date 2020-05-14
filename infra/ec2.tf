@@ -3,7 +3,7 @@ resource "aws_key_pair" "deployer" {
   public_key = var.public_key
 }
 
-resource "aws_security_group" "allow_http_ssh" {
+resource "aws_security_group" "allow_ssh" {
   description = "To Allow http and ssh access to the ec2"
   vpc_id      = aws_vpc.main.id
 
@@ -14,6 +14,21 @@ resource "aws_security_group" "allow_http_ssh" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "sg-ssh"
+  }
+}
+
+resource "aws_security_group" "allow_http" {
+  description = "To Allow http and ssh access to the ec2"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     description = "http from internet"
@@ -23,7 +38,6 @@ resource "aws_security_group" "allow_http_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
 
   }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -32,9 +46,11 @@ resource "aws_security_group" "allow_http_ssh" {
   }
 
   tags = {
-    Name = "assesment 2 for Tu Lan"
+    Name = "sg-http"
   }
 }
+
+ 
 
 # resource "aws_launch_configuration" "linux" {
 
@@ -70,7 +86,7 @@ resource "aws_lb" "load_balancer" {
   name               = "A2lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.allow_http_ssh.id]
+  security_groups    = [aws_security_group.allow_http.id]
   subnets            = [aws_subnet.public_az1.id, aws_subnet.public_az2.id, aws_subnet.public_az3.id]
 
   tags = {
@@ -99,7 +115,7 @@ resource "aws_lb_listener" "front-end" {
 resource "aws_instance" "front-end" {
   ami             = var.ami_id
   instance_type   = "t2.micro"
-  security_groups = [aws_security_group.allow_http_ssh.id]
+  security_groups = [aws_security_group.allow_ssh.id]
   subnet_id       = aws_subnet.private_az1.id
   key_name        = aws_key_pair.deployer.key_name
 
