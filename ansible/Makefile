@@ -1,6 +1,5 @@
-up:
-	
-	cd .. && terraform apply --auto-approve
+up:	
+	cd infra && terraform apply --auto-approve
 
 run:
 	chmod +x run_ansible.sh
@@ -8,6 +7,6 @@ run:
 
 
 down:
-	cd .. && terraform destroy --auto-approve
+	cd infra && terraform destroy --auto-approve
 
 
