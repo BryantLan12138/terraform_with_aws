@@ -1,4 +1,0 @@
-- name: Deploy Application
-  hosts: all
-  vars:
-  tasks: 
