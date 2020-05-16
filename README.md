@@ -155,17 +155,20 @@ __Load Balancer Listener__
     postgresql does. Finally the postgresql rds is set up seccessfully.
 
 
-## Something went wrong
+__Something went wrong__
     
     When I went through your specification of the project that requires me to output the resources I built before. Unfortuanately, the ec2 instance which spined up
     by auto scaling group is hard to output their public ip address by terraform. 
     So as result, I'm giving up using the resource that to build ec2 machine(Launch Configuration, Target Group, Auto Scaling group)
 
-## aws_instance (ec2) 
+__aws_instance (ec2)__ 
 
     Although the Launch configuration is abandon, the ami_image is still be neccesary for us to deploy the ec2 instance. So we pass the ami_image variable from variable.tf & terraform.tfvars(which stores the definition of variables) under the aws_instance section, which is the latest AWS Linux image. Define its size as in free tier which is micro.t2, attach the security group we created before which allows ssh and https traffic to the ec2 instance. To define its subnet we only need to pick one of the private subnets from three to attach with it, since the attribute of "vpc_id" can only be assigned with one subnet.
 
+## To run The application successfully on local
 
+    command: sudo apt install golong-go
+    
 ## Part D
 
     Previously, we have successfully build the resources we need to deploy our project on AWS. There's one more thing we should setup with the resources, is to get the output of them. You can basically take a break and think about what kind of output you are looking for for the project that would be deployed. 

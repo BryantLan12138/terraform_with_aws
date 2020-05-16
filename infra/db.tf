@@ -7,6 +7,30 @@ resource "aws_db_subnet_group" "a2" {
   }
 }
 
+resource "aws_security_group" "attach_db" {
+  description = "To Allow traffic from ec2 only"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "traffic from ec2"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "sg-db"
+  }
+}
+
+
 resource "aws_db_instance" "postgresql" {
   identifier           = "app-db"
   allocated_storage    = 20
@@ -20,6 +44,7 @@ resource "aws_db_instance" "postgresql" {
   parameter_group_name = "default.postgres9.6"
   skip_final_snapshot  = true
   db_subnet_group_name = aws_db_subnet_group.a2.id
+  vpc_security_group_ids = [aws_security_group.attach_db.id]
   port                 = 5432
 
   #   security_group_names = [aws_security_group.allow_http_ssh.id]

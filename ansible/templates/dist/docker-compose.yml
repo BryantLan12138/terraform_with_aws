@@ -1,0 +1,15 @@
+version: "3"
+services:
+  db: 
+    container_name: app-db
+    image: postgres:10.7
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - DbUser=postgres
+      - DbPassword=password
+      - DbName=app
+      - DbHost = localhost
+      - ListenHost = localhost
+      - ListenPort = 3000

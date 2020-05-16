@@ -1,16 +1,72 @@
-- name: Deploy Application
+- name: Download the application
   hosts: all
   vars:
-  tasks: 
-    - name: Ensure apache is installed
-      become: yes
-      package:
-        name: httpd
-        state: present
     
-    - name: Ensure apache server is running
+  tasks:
+    # - name: Download and unzip the application
+    #   shell: |
+    #     wget https://github.com/servian/TechTestApp/releases/download/v.0.6.0/TechTestApp_v.0.6.0_linux64.zip
+    #     unzip TechTestApp_v.0.6.0_linux64.zip
+    #     rm TechTestApp_v.0.6.0_linux64.zip
+
+    # - name: Download from Source Control
+    #   become: yes
+    #   get_url:
+    #     url: https://github.com/servian/TechTestApp/releases/download/v.0.6.0/TechTestApp_v.0.6.0_linux64.zip
+    #     dest: ./templates
+    #     remote_src: yes
+    #
+    - name: make a diretory called app
+      become: yes
+      become_user: root
+      file:
+        path: /etc/app
+        state: directory
+        mode: 755
+      
+    - name: Unarchive the application from source control
+      become: yes
+      become_user: root
+      unarchive:
+        src: https://github.com/servian/TechTestApp/releases/download/v.0.6.0/TechTestApp_v.0.6.0_linux64.zip
+        dest: /etc/app
+        remote_src: yes
+       
+    # - name: copy the application to local drive
+    #   become: yes
+    #   become_user: root
+    #   fetch:
+    #     src: /etc/app/dist 
+    #     dest: templates
+
+    - name: Configure application endpoints and other environment variables
+      become: yes
+      become_user: root
+      vars:
+        file_location: "/etc/app/dist/conf.toml"
+      template:
+        dest: "{{ file_location }}"
+        src: "/home/sdouser/sdd/assignment2/assessment2-student-BryantLan12138/ansible/templates/conf.toml.tpl"
+      
+    - name: Pass the service file to ec2 in order to deploy it automatically
+      become: yes
+      become_user: root
+      template:
+        src: "/home/sdouser/sdd/assignment2/assessment2-student-BryantLan12138/ansible/templates/systemd.service.tpl"
+        dest: /usr/lib/systemd/system/techtestapp.service
+      
+    - name: run the application on ec2 by systemd
       become: yes
       service:
-        name:  httpd
-        state:  started
-        enabled:  yes  
+        name: techtestapp.service
+        state: started
+        enabled: yes
+    
+    - name: db seed to update database
+      become: yes
+      shell: 
+        cmd: |
+          cd /etc/app/dist
+          ./TechTestApp updatedb -s 
+
+    

@@ -1,0 +1,7 @@
+"DbUser" = "{{db_user}}"
+"DbPassword" = "{{db_pass}}"
+"DbName" = "app"
+"DbPort" = "5432"
+"DbHost" = "{{db_endpoint}}"
+"ListenHost" = "localhost"
+"ListenPort" = "3000"
