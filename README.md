@@ -17,7 +17,7 @@
     Regarding we are using AWS Educate account, the place where to get credential is quiet different to normal
     AWS account. In the case, grab the account credential at workbench page, click in **Account details**, copy 
     and paste them in *.aws* folder at root directory for you OS. So that to get connected with AWS from CLI.
-    ![Image of aws account](https://github.com/RMIT-COSC2759-SDO/assessment2-student-BryantLan12138/blob/master/screenshots/aws_educate.png)
+    ![Image of aws account](https://github.com/RMIT-COSC2759-SDO/assessment2-student-BryantLan12138/blob/master/screenshots/aws_educate.png?raw=true)
 
 ### AWS setup with terraform:
     Under the **main.tf**, specify the *provider name* with *version* and other information necessary. After that do the 
