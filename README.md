@@ -11,14 +11,14 @@
 
 __store aws credential__:
     Regarding we are using AWS Educate account, the place where to get credential is quiet different to normal
-    AWS account. In the case, grab the account credential at workbench page, click in ## Account details, copy 
-    and paste them in ##.aws folder at root directory for you OS. So that to get connected with AWS from CLI.
+    AWS account. In the case, grab the account credential at workbench page, click in **Account details**, copy 
+    and paste them in *.aws* folder at root directory for you OS. So that to get connected with AWS from CLI.
 
 __AWS setup with terraform__:
-    Under the main.tf, specify the provider name with version and other information necessary. After that do the 
+    Under the **main.tf**, specify the *provider name* with *version* and other information necessary. After that do the 
     following command:
     -terraform init
-    Then terraform will go downlaod corresponding dependency(provider plugin), at the time of writing is ## aws version
+    Then terraform will go downlaod corresponding dependency(provider plugin), at the time of writing is **aws version**
     2.23.
 
 
