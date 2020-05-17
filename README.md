@@ -61,6 +61,7 @@ __screenshot__
     "main" is pretty flexible term that we can use to describe the resource we are deploying.
 __screenshot__
     ![Image](img/vpc.png "vpc")
+    ![Image](img/aws_vpc.png "vpc")
 
 ### Internet Gateway:
 
@@ -72,6 +73,7 @@ __screenshot__
     AWS console, they both acheive same functionality. (screenshot here) The rest part is same as we did for VPC.
 __screenshot__
     ![Image](img/IG.png "internet gateway")
+    ![Image](img/aws_internet_gateway.png "internet gateway")
 ### default route table:
 
     By default, default route table comes up with VPC, this resource is quiet different with others. We don't create it, instead
@@ -81,16 +83,16 @@ __screenshot__
     id . The cidr_block is required so we typed 0.0.0.0/0 to allow any inbound traffic.
 __screenshot__
     ![Image](img/route_table.png "default route table")
+    ![Image](img/aws_route_table.png "default route table")
 ### Subnet:
 
     To meet your expectation, we are heading to create 9 subnets in total, 3 in each avaliability zone so we have redundency in case
     there is an outage in AWS. In the case, we will deploy a standard three layer structre, public, private and data. 
 __screenshot__
     ![Image](img/subnet_public.png "public")
-__screenshot__
     ![Image](img/subnet_private.png "private")
-__screenshot__
     ![Image](img/subnet_data.png "data")
+    ![Image](img/aws_subnets.png "data")
 
 ### Key pair
 
@@ -112,6 +114,8 @@ __screenshot__
     public_key = "<public_key>"
 __screenshot__
     ![Image](img/keypair1.png "data")
+    ![Image](img/public_key.png "data")
+    ![Image](img/aws_deploy_key.png "data") 
 ### Security Group
 
     Security Group is used for controlling inbound and outbound traffics coming in & coming out. We will attach this to ec2 instance as 
@@ -120,14 +124,17 @@ __screenshot__
     As we will need to ssh and http to the instance, which means the port 22&80 should be open for our host machine, in order to get into the ec2 instance and make it public to internet. 
 __screenshot__
     ![Image](img/sg_ec2.png "data")
+    ![Image](img/aws_sg_ec2.png "data")
 
     Beside, we need to attach another security group to load balancer and db, load balancer is open to everyone on port 80 from 0.0.0.0/0, to give access for everyone on internet to access the app. By doing that we need the below setup for load balancer
  __screenshot__
     ![Image](img/sg_lb.png "data")
+    ![Image](img/aws_sg_lb.png "data")
 
     The security attached with db should only get traffic from ec2 to there for the best security practice. In case we are building a postgresql db which needs port 5432 to be open. I seperate the db into db.tf file for better architecture sincer every resources for db is set together.
 __screenshot__
-    ![Image](img/sg_db.png "data")  
+    ![Image](img/sg_db.png "data") 
+    ![Image](img/aws_sg_db.png "data") 
 
 ### Launch Configuration
 
@@ -145,7 +152,8 @@ __This resource is been abandoned__
     Each Target Group is used to route requests to one or more registered targets. When a rule condition is met, traffic is forwarded to the 
     corresponding target. We will allow the HTTP request, specifies the VPC in which to create target group. So that add port:80 under the section.
 __screenshot__
-    ![Image](img/target_group.png "data")  
+    ![Image](img/target_group.png "data")
+    ![Image](img/aws_target_group.png "data")    
 
 ### Auto Scailing Group
 
@@ -165,7 +173,8 @@ __This resource is been abandoned__
     The Load Balancer is the service to be setup infront of others services to handle the traffic. We need to attach the subnets and security group
     with Load Balancer by passing their variable under the section in ec2.tf.
 __screenshot__
-    ![Image](img/load_balancer.png "data") 
+    ![Image](img/load_balancer.png "data")
+    ![Image](img/aws_lb.png "data") 
 
 ### Load Balancer Listener
     
@@ -174,11 +183,12 @@ __screenshot__
     The rules of Load Balancer Listener is to determine how the Load Balancer routes requests to its ec2 instance.
 __screenshot__
     ![Image](img/load_balancer_listener.png "data")
+    ![Image](img/aws_lb_listener.png "data")
 
 ## Something went wrong
     
     When I went through your specification of the project that requires me to output the resources I built before. Unfortuanately, the ec2 instance which spined up
-    by auto scaling group is hard to output their public ip address by terraform. 
+    by auto scaling group is hard to output their public ip address by terraform from --terraform output. 
     So as result, I'm giving up using the resource that to build ec2 machine(Launch Configuration, Target Group, Auto Scaling group)
 
 ## aws_instance (ec2) 
@@ -186,10 +196,12 @@ __screenshot__
     Although the Launch configuration is abandon, the ami_image is still be neccesary for us to deploy the ec2 instance. So we pass the ami_image variable from variable.tf & terraform.tfvars(which stores the definition of variables) under the aws_instance section, which is the latest AWS Linux image. Define its size as in free tier which is micro.t2, attach the security group we created before which allows ssh and https traffic to the ec2 instance. To define its subnet we only need to pick one of the private subnets from three to attach with it, since the attribute of "vpc_id" can only be assigned with one subnet.
 __screenshot__
 ![Image](img/ec2.png "data")
+![Image](img/aws_ec2.png "data")
 
     In order to get the latest ec2 AMI for AWS linux image, I added another section to filter the ami I'm looking for and then send it data to ec2 section as variable, so that we don't need to do that manually.
 __screenshot__
 ![Image](img/ami_data.png "data")
+![Image](img/aws_ami.png "data")
 ## Data Layer 
     
     After I reserched about the way to configure aws rds into particular subnets. Is to define the aws_subnet_group first before build up db, then include
@@ -205,10 +217,11 @@ __screenshot__
     to the db later on. Attach the subnet group we pre-defined, skip any management about backup or snapshots, set them as false, set the port with 5432 as usual 
     postgresql does. Finally the postgresql rds is set up seccessfully.
 __screenshot__
-![Image](img/postgresql.png "data")  
+![Image](img/postgresql.png "data") 
+![Image](img/aws_postgresql.png "data")   
 
 
-### Terraform Output
+
 
 
     
@@ -217,10 +230,11 @@ __screenshot__
     Previously, we have successfully build the resources we need to deploy our project on AWS. There's one more thing we should setup with the resources, is to get the output of them. You can basically take a break and think about what kind of output you are looking for for the project that would be deployed. 
 
     we need public ip for ec2 so to ssh and in there. The end point of LB to get traffic for users to access the project. DB username&password to do the following queries and other stuffs, and its endpoint to connect with ec2 instance to make the infrastructure together. Now you have to borrowse the terraform website for each of the service, for exapmle the aws_instance (https://www.terraform.io/docs/providers/aws/r/instance.html), output is generated in limit attributes that are listed under "Attribute Reference" section, such as "public_ip" we need. In other word, you cannot expect to generate the output which the service doesn't have. 
-
+__screenshot__
+![Image](img/output.png "data")
     I have generated corresponding output in outputs.tf by using the referece of terraform website. 
 
-    By automate generate the ansible inventory.file, we have to be careful with its syntax which is based on yaml. By doing that, we are leveraging run_ansible.sh bash file to type in the commands in there. Firstly to specify the keyword "all" & "hosts" into inventory file, inventory file is used to store the information of target machines. Importantly, giving "two spaces before the following command is the convention of yaml file", so what I have done is to set two whitespaces before the content I'm writting to inventory.yml like: echo "  command". Finally we are trying to pass the output of terraform about instance_pulic_ip into the inventory file. The reason for doing that because the host of ec2 instance is dynamic, once we destroy the services of it and re-aplly again the public ip address is always changing, so we need to pass it as variable instead of string. By doing that, we need to use the syntax of "()"is command group that can import command to be run. Regarding my architecture of the project I put ansible inside the infra folder so i have to run the command "cd .." before getting the terraform output 
+    By automate generate the ansible inventory.file, we have to be careful with its syntax which is based on yaml. By doing that, we are leveraging run_ansible.sh bash file to type in the commands in there. Firstly to specify the keyword "all" & "hosts" into inventory file, inventory file is used to store the information of target machines. Importantly, giving "two spaces before the following command is the convention of yaml file", so what I have done is to set two whitespaces before the content I'm writting to inventory.yml like: echo "  command". Finally we are trying to pass the output of terraform about instance_pulic_ip into the inventory file. The reason for doing that because the host of ec2 instance is dynamic, once we destroy the services of it and re-apply again the public ip address is always changing, so we need to pass it as variable instead of string. By doing that, we need to use the syntax of "()"is command group that can import command to be run. Regarding my architecture of the project I put ansible inside the infra folder so i have to run the command "cd .." before getting the terraform output 
     "terraform output instance_public_ip". Then the run_ansible.sh is executble if you type "./run_ansible.sh" or just drag it into the cmd. To make life easier, I created a Makefile so that you can just run "make run" to acheive the same obbjective.
 
 ## cleanup instructions
