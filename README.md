@@ -13,7 +13,7 @@
 
 ## deploy instructions
 
-### store aws credential :
+### store aws credential:
     Regarding we are using AWS Educate account, the place where to get credential is quiet different to normal
     AWS account. In the case, grab the account credential at workbench page, click in **Account details**, copy 
     and paste them in *.aws* folder at root directory for you OS. So that to get connected with AWS from CLI.
