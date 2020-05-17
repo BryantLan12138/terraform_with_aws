@@ -2,7 +2,8 @@
 
 
 ## dependencies
-    - aws plugin version 2.23
+    Here are the dependencies need to be installed for the project, with attached links.
+    - aws cli
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
     - terraform:
     curl -o terraform.zip https://releases.hashicorp.com/terraform/0.12.21/terraform_0.12.21_linux_amd64.zip
@@ -28,7 +29,8 @@ __AWS setup with terraform__:
 __VPC__:
     We have to deploy VPC for the project, in order to create the netwrok that the project will deployed into.
 
-    Reference to :https://www.terraform.io/docs/providers/aws/r/vpc.html
+    [link to reference!](https://www.terraform.io/docs/providers/aws/r/vpc.html)
+    
 
     Follow the basic usage on official website, we specify the resource we intent to build up through terraform,
     which is vpc, with the required argument (CIDR_BLOCK).
@@ -45,9 +47,10 @@ __VPC__:
     To apply the change
     -terraform apply ||-terraform apply --auto-apply(no need to type yes) 
 
-__use above command after finalized each resources__
+**use above command after finalized each resources**
 
-    ##further explaination 
+    *further explaination*
+
     resource "aws_vpc" "main" 
     the first element follow by the key word "resource" "aws_vpc" is the resource we are deploying, the second element 
     "main" is pretty flexible term that we can use to describe the resource we are deploying.
