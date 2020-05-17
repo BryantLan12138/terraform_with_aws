@@ -56,14 +56,8 @@ resource "aws_db_instance" "postgresql" {
 
 resource "aws_s3_bucket" "terraform-state-storage-s3" {
   bucket = "tu-lan-sdo-assignment2"
-
-  versioning {
-    enabled = true
-  }
-
-  lifecycle {
-    prevent_destroy = true
-  }
+  acl    = "private"
+  force_destroy = true
 
   tags = {
     Name = "S3 Remote Terraform State Store"
@@ -74,7 +68,7 @@ data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
     bucket = "tu-lan-sdo-assignment2"
-    key = "file/terraform.tfstate"
+    key    = "file/terraform.tfstate"
     region = "us-east-1"
   }
 }
