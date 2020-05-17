@@ -13,20 +13,20 @@
 
 ## deploy instructions
 
-__store aws credential__:
+### store aws credential :
     Regarding we are using AWS Educate account, the place where to get credential is quiet different to normal
     AWS account. In the case, grab the account credential at workbench page, click in **Account details**, copy 
     and paste them in *.aws* folder at root directory for you OS. So that to get connected with AWS from CLI.
 
-__AWS setup with terraform__:
+### AWS setup with terraform:
     Under the **main.tf**, specify the *provider name* with *version* and other information necessary. After that do the 
     following command:
     -terraform init
     Then terraform will go downlaod corresponding dependency(provider plugin), at the time of writing is **aws version**
     2.23.
 
-
-__VPC__:
+## Infrastructure
+### VPC:
     We have to deploy VPC for the project, in order to create the netwrok that the project will deployed into.
 
     [link to reference!](https://www.terraform.io/docs/providers/aws/r/vpc.html)
@@ -55,7 +55,7 @@ __VPC__:
     the first element follow by the key word "resource" "aws_vpc" is the resource we are deploying, the second element 
     "main" is pretty flexible term that we can use to describe the resource we are deploying.
 
-__Internet Gateway__:
+### Internet Gateway:
 
     Internet Gateway is the critical component of VPC to allow communication between instance in our VPC and the internet.
 
