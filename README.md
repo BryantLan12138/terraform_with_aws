@@ -64,7 +64,7 @@
     About "VPC id" section we can either fill in "aws.vpc.main.id" as variable, either fill in the particular vpc id from 
     AWS console, they both acheive same functionality. (screenshot here) The rest part is same as we did for VPC.
 
-__default route table__:
+### default route table:
 
     By default, default route table comes up with VPC, this resource is quiet different with others. We don't create it, instead
     we are adopting it with other services by specifing the default route table id. 
@@ -72,13 +72,13 @@ __default route table__:
     The next section "route" is optinal, however if specify that the route table can identify internet gateway by filling in gateway 
     id . The cidr_block is required so we typed 0.0.0.0/0 to allow any inbound traffic.
 
-__Subnet__:
+### Subnet:
 
     To meet your expectation, we are heading to create 9 subnets in total, 3 in each avaliability zone so we have redundency in case
     there is an outage in AWS. In the case, we will deploy a standard three layer structre, public, private and data. 
 
 
-__Key pair__
+### Key pair
 
     Key pair is to make sure we can login to the remote instances on AWS which called ec2. By default we already generated ssh key for
     connecting with github. Also you can run the below command to generate ssh key:
@@ -97,7 +97,7 @@ __Key pair__
 
     public_key = "<public_key>"
 
-__Security Group__
+### Security Group
 
     Security Group is used for controlling inbound and outbound traffics coming in & coming out. We will attach this to ec2 instance as 
     they are created as part of auto scailing group.
@@ -105,7 +105,7 @@ __Security Group__
     As we will need to ssh and http to the instance, which means the port 22&80 should be open for our host machine, in order to get into
     the ec2 instance and make it public to internet. 
 
-__Launch Configuration__
+### Launch Configuration
 
     We have to specify the launch configuration for auto scailing group if it is been triggered. We will need to know which AMI will we 
     deploy, in the case is the latest Amazon Linux image
@@ -116,13 +116,13 @@ __Launch Configuration__
     to ssh into the new ec2 instance.
 
 
-__Target Group__
+### Target Group
 
     Each Target Group is used to route requests to one or more registered targets. When a rule condition is met, traffic is forwarded to the 
     corresponding target. We will allow the HTTP request, specifies the VPC in which to create target group. So that add port:80 undr the section.
 
 
-__Auto Scailing Group__
+### Auto Scailing Group
 
     We are building up ec2 instances based on the metric of Auto Scailing Group and the configuration of its pre-requisites services such as 
     Target Group and Launch configuration and Security Group as mentioned above. In the case, I limit the number of ec2 machine to be 1 only 
@@ -131,7 +131,7 @@ __Auto Scailing Group__
     I'm addressing the relevant services by passing their variables to Auto Scailing Group, instead the string of them to get rid of duplicated 
     information. 
 
-__Load Balancer__
+### Load Balancer
 
     There are three types of load balancer on AWS, the Application Load Balancer suits our case the best. We need to label its type after 
     "load_balancer_type". In order to protect the ec2 instance from unknown ingress traffic, we are building the Load balancer external to handle
@@ -140,7 +140,7 @@ __Load Balancer__
     The Load Balancer is the service to be setup infront of others services to handle the traffic. We need to attach the subnets and security group
     with Load Balancer by passing their variable under the section in ec2.tf.
 
-__Load Balancer Listener__
+### Load Balancer Listener
     
     Before we implement Load Balancer with other services. We have to add one or more listener, that is a process to checks for connection requests,
     using the ports and protocol that I configured, which is port 80 to accept incoming traffic and prot 22 to allow ssh connection to ec2 machine. 
@@ -171,9 +171,7 @@ __aws_instance (ec2)__
 
     Although the Launch configuration is abandon, the ami_image is still be neccesary for us to deploy the ec2 instance. So we pass the ami_image variable from variable.tf & terraform.tfvars(which stores the definition of variables) under the aws_instance section, which is the latest AWS Linux image. Define its size as in free tier which is micro.t2, attach the security group we created before which allows ssh and https traffic to the ec2 instance. To define its subnet we only need to pick one of the private subnets from three to attach with it, since the attribute of "vpc_id" can only be assigned with one subnet.
 
-## To run The application successfully on local
 
-    command: sudo apt install golong-go
     
 ## Part D
 
