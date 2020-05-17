@@ -18,15 +18,18 @@
     AWS account. In the case, grab the account credential at workbench page, click in **Account details**, copy 
     and paste them in *.aws* folder at root directory for you OS. So that to get connected with AWS from CLI.
 
+__screenshot__
     ![Image of aws account](img/aws_educate.png "aws_educate_console")
-
+    
 ### AWS setup with terraform:
     Under the **main.tf**, specify the *provider name* with *version* and other information necessary. After that do the 
     following command:
     -terraform init
     Then terraform will go downlaod corresponding dependency(provider plugin), at the time of writing is **aws version**
     2.23.
-
+__screenshot__
+    ![Image of aws provider](img/aws_provider.png "aws_educate_provider")
+    
 ## Infrastructure
 ### VPC:
     We have to deploy VPC for the project, in order to create the netwrok that the project will deployed into.
@@ -56,6 +59,8 @@
     resource "aws_vpc" "main" 
     the first element follow by the key word "resource" "aws_vpc" is the resource we are deploying, the second element 
     "main" is pretty flexible term that we can use to describe the resource we are deploying.
+__screenshot__
+    ![Image](img/vpc.png "vpc")
 
 ### Internet Gateway:
 
@@ -65,7 +70,8 @@
 
     About "VPC id" section we can either fill in "aws.vpc.main.id" as variable, either fill in the particular vpc id from 
     AWS console, they both acheive same functionality. (screenshot here) The rest part is same as we did for VPC.
-
+__screenshot__
+    ![Image](img/IG.png "internet gateway")
 ### default route table:
 
     By default, default route table comes up with VPC, this resource is quiet different with others. We don't create it, instead
@@ -73,12 +79,18 @@
 
     The next section "route" is optinal, however if specify that the route table can identify internet gateway by filling in gateway 
     id . The cidr_block is required so we typed 0.0.0.0/0 to allow any inbound traffic.
-
+__screenshot__
+    ![Image](img/route_table.png "default route table")
 ### Subnet:
 
     To meet your expectation, we are heading to create 9 subnets in total, 3 in each avaliability zone so we have redundency in case
     there is an outage in AWS. In the case, we will deploy a standard three layer structre, public, private and data. 
-
+__screenshot__
+    ![Image](img/subnet_public.png "public")
+__screenshot__
+    ![Image](img/subnet_private.png "private")
+__screenshot__
+    ![Image](img/subnet_data.png "data")
 
 ### Key pair
 
@@ -98,14 +110,24 @@
     the strings of our public key into the argument with double quote "".
 
     public_key = "<public_key>"
-
+__screenshot__
+    ![Image](img/keypair1.png "data")
 ### Security Group
 
     Security Group is used for controlling inbound and outbound traffics coming in & coming out. We will attach this to ec2 instance as 
     they are created as part of auto scailing group.
 
-    As we will need to ssh and http to the instance, which means the port 22&80 should be open for our host machine, in order to get into
-    the ec2 instance and make it public to internet. 
+    As we will need to ssh and http to the instance, which means the port 22&80 should be open for our host machine, in order to get into the ec2 instance and make it public to internet. 
+__screenshot__
+    ![Image](img/sg_ec2.png "data")
+
+    Beside, we need to attach another security group to load balancer and db, load balancer is open to everyone on port 80 from 0.0.0.0/0, to give access for everyone on internet to access the app. By doing that we need the below setup for load balancer
+ __screenshot__
+    ![Image](img/sg_lb.png "data")
+
+    The security attached with db should only get traffic from ec2 to there for the best security practice. In case we are building a postgresql db which needs port 5432 to be open. I seperate the db into db.tf file for better architecture sincer every resources for db is set together.
+__screenshot__
+    ![Image](img/sg_db.png "data")  
 
 ### Launch Configuration
 
@@ -117,12 +139,13 @@
     Also, we need to specify the type of the instance that be deployed, the following security group and key pair be attached with. In order 
     to ssh into the new ec2 instance.
 
-
+__This resource is been abandoned__
 ### Target Group
 
     Each Target Group is used to route requests to one or more registered targets. When a rule condition is met, traffic is forwarded to the 
-    corresponding target. We will allow the HTTP request, specifies the VPC in which to create target group. So that add port:80 undr the section.
-
+    corresponding target. We will allow the HTTP request, specifies the VPC in which to create target group. So that add port:80 under the section.
+__screenshot__
+    ![Image](img/target_group.png "data")  
 
 ### Auto Scailing Group
 
@@ -132,7 +155,7 @@
 
     I'm addressing the relevant services by passing their variables to Auto Scailing Group, instead the string of them to get rid of duplicated 
     information. 
-
+__This resource is been abandoned__
 ### Load Balancer
 
     There are three types of load balancer on AWS, the Application Load Balancer suits our case the best. We need to label its type after 
@@ -141,18 +164,38 @@
 
     The Load Balancer is the service to be setup infront of others services to handle the traffic. We need to attach the subnets and security group
     with Load Balancer by passing their variable under the section in ec2.tf.
+__screenshot__
+    ![Image](img/load_balancer.png "data") 
 
 ### Load Balancer Listener
     
     Before we implement Load Balancer with other services. We have to add one or more listener, that is a process to checks for connection requests,
     using the ports and protocol that I configured, which is port 80 to accept incoming traffic and prot 22 to allow ssh connection to ec2 machine. 
     The rules of Load Balancer Listener is to determine how the Load Balancer routes requests to its ec2 instance.
+__screenshot__
+    ![Image](img/load_balancer_listener.png "data")
 
+## Something went wrong
+    
+    When I went through your specification of the project that requires me to output the resources I built before. Unfortuanately, the ec2 instance which spined up
+    by auto scaling group is hard to output their public ip address by terraform. 
+    So as result, I'm giving up using the resource that to build ec2 machine(Launch Configuration, Target Group, Auto Scaling group)
 
+## aws_instance (ec2) 
+
+    Although the Launch configuration is abandon, the ami_image is still be neccesary for us to deploy the ec2 instance. So we pass the ami_image variable from variable.tf & terraform.tfvars(which stores the definition of variables) under the aws_instance section, which is the latest AWS Linux image. Define its size as in free tier which is micro.t2, attach the security group we created before which allows ssh and https traffic to the ec2 instance. To define its subnet we only need to pick one of the private subnets from three to attach with it, since the attribute of "vpc_id" can only be assigned with one subnet.
+__screenshot__
+![Image](img/ec2.png "data")
+
+    In order to get the latest ec2 AMI for AWS linux image, I added another section to filter the ami I'm looking for and then send it data to ec2 section as variable, so that we don't need to do that manually.
+__screenshot__
+![Image](img/ami_data.png "data")
 ## Data Layer 
     
     After I reserched about the way to configure aws rds into particular subnets. Is to define the aws_subnet_group first before build up db, then include
     subnets for data layer in 3 different avaliability zones into the subnet group, after finished them all, attach the subnet group with the db.
+__screenshot__
+![Image](img/db_subnet_group.png "data")    
 
     Firstly, we need to define the subnet group, in the line "subnet_ids" pass the varables of three subnets for data layers in that as value, so that the
     terraform can diagnozise the resources with particular ip. 
@@ -161,17 +204,11 @@
     ever used. It is potentially break down the pipeline sometimes for using latest version of db. We also need to specify the username/password for db to login
     to the db later on. Attach the subnet group we pre-defined, skip any management about backup or snapshots, set them as false, set the port with 5432 as usual 
     postgresql does. Finally the postgresql rds is set up seccessfully.
+__screenshot__
+![Image](img/postgresql.png "data")  
 
 
-__Something went wrong__
-    
-    When I went through your specification of the project that requires me to output the resources I built before. Unfortuanately, the ec2 instance which spined up
-    by auto scaling group is hard to output their public ip address by terraform. 
-    So as result, I'm giving up using the resource that to build ec2 machine(Launch Configuration, Target Group, Auto Scaling group)
-
-__aws_instance (ec2)__ 
-
-    Although the Launch configuration is abandon, the ami_image is still be neccesary for us to deploy the ec2 instance. So we pass the ami_image variable from variable.tf & terraform.tfvars(which stores the definition of variables) under the aws_instance section, which is the latest AWS Linux image. Define its size as in free tier which is micro.t2, attach the security group we created before which allows ssh and https traffic to the ec2 instance. To define its subnet we only need to pick one of the private subnets from three to attach with it, since the attribute of "vpc_id" can only be assigned with one subnet.
+### Terraform Output
 
 
     
