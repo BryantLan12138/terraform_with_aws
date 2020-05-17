@@ -7,7 +7,7 @@ output "lb_endpoint" {
 }
 
 output "db_endpoint" {
-  value = aws_db_instance.postgresql.endpoint
+  value = aws_db_instance.postgresql.address
 }
 
 output "db_user" {
@@ -16,4 +16,8 @@ output "db_user" {
 
 output "db_pass" {
   value = aws_db_instance.postgresql.password
+}
+
+output "db_name" {
+  value = aws_db_instance.postgresql.name
 }

@@ -1,10 +1,21 @@
+data "aws_ami" "aws_linux_image" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*"]
+  }
+}
+
+
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
   public_key = var.public_key
 }
 
 resource "aws_security_group" "ec2" {
-  description = "To Allow http/https traffic from db and ssh access to the ec2"
+  description = "To Allow http and ssh traffic from internet to the ec2"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -23,30 +34,6 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    description = "https traffic"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "traffic from db"
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "traffic from db"
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -55,7 +42,7 @@ resource "aws_security_group" "ec2" {
   }
 
   tags = {
-    Name = "sg-ssh"
+    Name = "sg-for ec2"
   }
 }
 
@@ -92,15 +79,15 @@ resource "aws_security_group" "allow_http" {
 #   }
 # }
 
- 
+
 resource "aws_instance" "front-end" {
-  ami             = var.ami_id
-  instance_type   = "t2.micro"
-  security_groups = [aws_security_group.ec2.id]
-  subnet_id       = aws_subnet.private_az1.id
-  key_name        = aws_key_pair.deployer.key_name
+  ami                         = data.aws_ami.aws_linux_image.id
+  instance_type               = "t2.micro"
+  security_groups             = [aws_security_group.ec2.id]
+  subnet_id                   = aws_subnet.private_az1.id
+  key_name                    = aws_key_pair.deployer.key_name
   associate_public_ip_address = true
-  
+
 
 
   tags = {
@@ -108,7 +95,7 @@ resource "aws_instance" "front-end" {
   }
 }
 
- 
+
 
 # resource "aws_launch_configuration" "linux" {
 
@@ -145,7 +132,7 @@ resource "aws_lb" "load_balancer" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.allow_http.id]
   subnets            = [aws_subnet.public_az1.id, aws_subnet.public_az2.id, aws_subnet.public_az3.id]
-  
+
   tags = {
     Environment = "production"
   }
