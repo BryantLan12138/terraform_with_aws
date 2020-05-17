@@ -2,9 +2,12 @@
 
 
 ## dependencies
-    aws plugin version 2.23 
-    terraform
-    ansible: sudo apt install ansible
+    - aws plugin version 2.23
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
+    - terraform:
+    curl -o terraform.zip https://releases.hashicorp.com/terraform/0.12.21/terraform_0.12.21_linux_amd64.zip
+    - ansible: 
+    sudo apt install ansible
 
 
 ## deploy instructions
